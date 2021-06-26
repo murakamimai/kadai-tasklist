@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <h1>メッセージ新規作成ページ</h1>
+    <h1>タスク新規作成ページ</h1>
 
     <div class="row">
         <div class="col-6">
