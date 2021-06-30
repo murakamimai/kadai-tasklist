@@ -83,6 +83,11 @@
                 <div class="title m-b-md">
                     Laravel
                 </div>
+            
+            {{-- ユーザ登録ページへのリンク --}}
+            {!! link_to_route('signup.get', 'Sign up now!', [], ['class' => 'btn btn-lg btn-primary']) !!}
+            </div>
+@endsection
 
                 <div class="links">
                     <a href="https://laravel.com/docs">Docs</a>
