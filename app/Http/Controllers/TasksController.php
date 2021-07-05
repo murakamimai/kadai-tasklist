@@ -85,13 +85,13 @@ class TasksController extends Controller
         
         // 認証済みユーザ（閲覧者）がその投稿の所有者である場合は、タスク詳細ビューでそれを表示
         if (\Auth::id() === $task->user_id) {
-         return view('tasks.show', [
-            'task' => $task,
-        ]);   
+            return view('tasks.show', [
+                'task' => $task,
+            ]);   
+        }else {
+            // トップページへリダイレクトさせる
+            return redirect('/');
         }
-
-        // 前のURLへリダイレクトさせる
-        return back();
     }
 
     /**
@@ -105,10 +105,16 @@ class TasksController extends Controller
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
-        // タスク編集ビューでそれを表示
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        
+        // 認証済みユーザ（閲覧者）がその投稿の所有者である場合は、タスク詳細ビューでそれを表示
+        if (\Auth::id() === $task->user_id) {
+            return view('tasks.edit', [
+                'task' => $task,
+            ]);   
+        } else {
+            // トップページへリダイレクトさせる
+            return redirect('/');
+        }
     }
 
     /**
@@ -126,20 +132,28 @@ class TasksController extends Controller
             'content' => 'required|max:255',
         ]);
         
-        // idの値でタスクを検索して取得
-        $task = Task::findOrFail($id);
-        
-        // 認証済みユーザ（閲覧者）の投稿として更新（リクエストされた値をもとに更新）
-        $request->user()->tasks()->create([
+        $task = Task::findOrFail($id); 
+        if (\Auth::id() === $task->user_id) {
+            // タスクを更新
+            $task->status = $request->status;    // 追加
+            $task->content = $request->content;
+            $task->save();
+        }
+       // 認証済みユーザ（閲覧者）の更新として保存（リクエストされた値をもとに作成）
+       /*
+        $request->user()->tasks()->update([
             'content' => $request->content,
             'status' => $request->status,
         ]);
-        
+        */
+
         // トップページへリダイレクトさせる
         return redirect('/');
     }
 
     /**
+     *  // idの値でタスクを検索して取得
+        
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -148,7 +162,7 @@ class TasksController extends Controller
     public function destroy($id)
     {
         // idの値で投稿を検索して取得
-        $task = Task::findOrFail($id);
+        $task = \App\Task::findOrFail($id);
 
         // 認証済みユーザ（閲覧者）がその投稿の所有者である場合は、投稿を削除
         if (\Auth::id() === $task->user_id) {
